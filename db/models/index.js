@@ -43,4 +43,40 @@ Object.keys(db).forEach((modelName) => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
+//Models relations:
+//Movie-Review
+db.Movie.hasMany(db.Review, {
+  foreignKey: "movieID",
+});
+db.Review.belongsTo(db.Movie, {
+  foreignKey: "movieID",
+});
+
+//User-Review
+db.User.hasMany(db.Review, {
+  foreignKey: "userID",
+});
+db.Review.belongsTo(db.User, {
+  foreignKey: "userID",
+});
+
+//User-Room
+db.User.belongsToMany(db.Room, {
+  through: "RoomUser",
+  as: "rooms",
+  foreignKey: "userID",
+});
+db.Room.belongsToMany(db.User, {
+  through: "RoomUser",
+  as: "users",
+  foreignKey: "roomID",
+});
+
+//Room-Movie
+db.Movie.hasMany(db.Room, {
+  foreignKey: "movieID",
+});
+db.Room.belongsTo(db.Movie, {
+  foreignKey: "movieID",
+});
 module.exports = db;

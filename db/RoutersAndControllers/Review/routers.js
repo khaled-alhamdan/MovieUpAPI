@@ -26,7 +26,7 @@ router.get(
   reviewList
 );
 router.post(
-  "/:movieID/createReview",
+  "/createReview",
   passport.authenticate("jwt", { session: false }),
   createReview
 );

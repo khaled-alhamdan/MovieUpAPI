@@ -39,7 +39,7 @@ app.use((err, req, res, next) => {
 // start server
 const runApp = async () => {
   try {
-    //   await db.sequelize.sync({ alter: true });
+    // await db.sequelize.sync({ alter: true });
     await db.sequelize.sync();
 
     app.listen(process.env.PORT, () => {
