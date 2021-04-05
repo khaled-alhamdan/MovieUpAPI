@@ -15,7 +15,7 @@ exports.createRoom = async (req, res, next) => {
       name: req.body.name,
       description: req.body.description,
     });
-    res, status(201).json(newRoom);
+    res.status(201).json(newRoom);
   } catch (error) {
     next(error);
   }
