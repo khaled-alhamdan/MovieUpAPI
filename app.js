@@ -6,6 +6,9 @@ const db = require("./db/models");
 const passport = require("passport");
 const { localStrategy, jwtStrategy } = require("./middlewares/passport");
 
+// Routers
+const reviewRouters = require("./db/RoutersAndControllers/Review/routers");
+const roomRouters = require("./db/RoutersAndControllers/Room/routers");
 // init app
 const app = express();
 
@@ -16,6 +19,10 @@ app.use(passport.initialize());
 passport.use(localStrategy);
 passport.use(jwtStrategy);
 app.use("/media", express.static(path.join(__dirname, "./media")));
+
+//Routers app use
+app.use("/", reviewRouters);
+app.use("/", roomRouters);
 
 // Errors handler middlewre
 app.use((err, req, res, next) => {
