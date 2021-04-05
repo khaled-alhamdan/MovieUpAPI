@@ -9,18 +9,21 @@ exports.signup = async (req, res, next) => {
   const { password } = req.body;
   const saltRounds = 10;
   try {
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    req.body.password = hashedPassword;
-    const newUser = await User.create(req.body);
-    const payload = {
-      id: newUser.id,
-      username: newUser.username,
-      role: newUser.role,
-      age: newUser.age,
-      exp: Date.now() + JWT_EXPIRATION_MS,
-    };
-    const token = jwt.sign(JSON.stringify(payload), JWT_SECRET);
-    res.status(201).json({ Token: token });
+    if (req.body.role !== "admin") {
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      req.body.password = hashedPassword;
+      const newUser = await User.create(req.body);
+      const payload = {
+        id: newUser.id,
+        username: newUser.username,
+        role: newUser.role,
+        age: newUser.age,
+        exp: Date.now() + JWT_EXPIRATION_MS,
+      };
+      const token = jwt.sign(JSON.stringify(payload), JWT_SECRET);
+      res.status(201).json({ Token: token });
+    }
+    res.status(400).json({ message: "Role can not be admin" });
   } catch (error) {
     next(error);
   }
