@@ -79,4 +79,11 @@ db.Movie.hasMany(db.Room, {
 db.Room.belongsTo(db.Movie, {
   foreignKey: "movieID",
 });
+
+// User-User
+db.User.belongsToMany(db.User, {
+  through: "Friend",
+  as: "contact",
+  foreignKey: "userID",
+});
 module.exports = db;
