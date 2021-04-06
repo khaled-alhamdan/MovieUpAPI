@@ -19,6 +19,7 @@ exports.createReview = async (req, res, next) => {
     const newReview = await Review.create({
       description: req.body.description,
       rating: req.body.rating,
+      movieID: movie.id,
     });
     res.status(201).json(newReview);
   } catch (error) {

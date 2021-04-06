@@ -23,7 +23,7 @@ exports.signup = async (req, res, next) => {
       const token = jwt.sign(JSON.stringify(payload), JWT_SECRET);
       res.status(201).json({ Token: token });
     }
-    res.status(400).json({ message: "Role can not be admin" });
+    res.status(400).json({ message: "Role cannot be admin" });
   } catch (error) {
     next(error);
   }
@@ -47,6 +47,21 @@ exports.signin = (req, res) => {
 exports.getTokenInfo = (req, res, next) => {
   try {
     res.json(req.user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get Users List
+exports.getUsersList = async (req, res, next) => {
+  try {
+    if (req.user.role === "admin") {
+      const users = await User.findAll({
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+      });
+      res.status(200).json(users);
+    }
+    res.status(400).json({ message: "Only admin can view users list" });
   } catch (error) {
     next(error);
   }

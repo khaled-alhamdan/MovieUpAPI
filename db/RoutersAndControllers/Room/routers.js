@@ -21,7 +21,7 @@ router.param("roomID", async (req, res, next, roomID) => {
   }
 });
 
-router.get("/", roomList);
+router.get("/", passport.authenticate("jwt", { session: false }), roomList);
 router.post("/", passport.authenticate("jwt", { session: false }), createRoom);
 router.put(
   "/:roomID",

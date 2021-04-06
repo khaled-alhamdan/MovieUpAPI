@@ -1,5 +1,5 @@
 // Connecting database
-const { Movie } = require("../../models");
+const { Movie, User } = require("../../models");
 
 // fetch movie controller
 exports.fetchMovie = async (movieId, next) => {
@@ -39,12 +39,15 @@ exports.getMovieByID = async (req, res, next) => {
 // Add new movie
 exports.addMovie = async (req, res, next) => {
   try {
-    if (req.file) {
-      req.body.image = `/media/${req.file.filename}`;
-      //   req.body.image = `http://${req.get("host")}/media/${req.file.filename}`;
+    if (req.user.role !== "viewer") {
+      if (req.file) {
+        req.body.image = `/media/${req.file.filename}`;
+        //   req.body.image = `http://${req.get("host")}/media/${req.file.filename}`;
+      }
+      const newMovie = await Movie.create(req.body);
+      res.status(201).json(newMovie);
     }
-    const newMovie = await Movie.create(req.body);
-    res.status(201).json(newMovie);
+    res.status(400).json({ message: "Viewers can not add movies" });
   } catch (error) {
     next(error);
   }
@@ -53,12 +56,15 @@ exports.addMovie = async (req, res, next) => {
 // Update movie
 exports.updateMovie = async (req, res, next) => {
   try {
-    if (req.file) {
-      req.body.image = `/media/${req.file.filename}`;
-      //   req.body.image = `http://${req.get("host")}/media/${req.file.filename}`;
+    if (req.user.role !== "viewer") {
+      if (req.file) {
+        req.body.image = `/media/${req.file.filename}`;
+        //   req.body.image = `http://${req.get("host")}/media/${req.file.filename}`;
+      }
+      await req.movie.update(req.body);
+      res.status(204).json("Movie Info has been updated");
     }
-    await req.movie.update(req.body);
-    res.status(204).json("Movie Info has been updated");
+    res.status(400).json({ message: "Viewers can not edit movies" });
   } catch (error) {
     next(error);
   }
@@ -67,8 +73,11 @@ exports.updateMovie = async (req, res, next) => {
 // Delete movie
 exports.deleteMovie = async (req, res, next) => {
   try {
-    await req.movie.destroy(req.body);
-    res.status(204).json("Movie has been deleted");
+    if (req.user.role !== "viewer") {
+      await req.movie.destroy(req.body);
+      res.status(204).json("Movie has been deleted");
+    }
+    res.status(400).json({ message: "Viewers can not delete movies" });
   } catch (error) {
     next(error);
   }
