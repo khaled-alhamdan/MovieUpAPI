@@ -1,4 +1,4 @@
-const { Room } = require("../../models");
+const { Room, Movie } = require("../../models");
 
 exports.fetchRoom = async (roomID, next) => {
   try {
@@ -12,10 +12,18 @@ exports.fetchRoom = async (roomID, next) => {
 exports.createRoom = async (req, res, next) => {
   try {
     if (req.user.role !== "viewer") {
+      const movie = await Movie.findOne({
+        where: {
+          name: req.body.movie,
+        },
+      });
       const newRoom = await Room.create({
         name: req.body.name,
         description: req.body.description,
+        movieID: movie.id,
       });
+      newRoom.addUser(req.user);
+      console.log(req.user);
       res.status(201).json(newRoom);
     }
     res.status(400).json({ message: "Viewers cannot add rooms" });
