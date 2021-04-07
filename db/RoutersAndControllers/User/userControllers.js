@@ -21,7 +21,7 @@ exports.signup = async (req, res, next) => {
         exp: Date.now() + JWT_EXPIRATION_MS,
       };
       const token = jwt.sign(JSON.stringify(payload), JWT_SECRET);
-      res.status(201).json({ Token: token });
+      res.status(201).json({ token: token });
     }
     res.status(400).json({ message: "Role cannot be admin" });
   } catch (error) {
@@ -57,11 +57,42 @@ exports.getUsersList = async (req, res, next) => {
   try {
     if (req.user.role === "admin") {
       const users = await User.findAll({
-        attributes: { exclude: ["createdAt", "updatedAt"] },
+        attributes: { exclude: ["createdAt", "updatedAt", "password"] },
       });
       res.status(200).json(users);
     }
     res.status(400).json({ message: "Only admin can view users list" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get user by ID
+exports.getUserByID = async (req, res, next) => {
+  const { userId } = req.params;
+  try {
+    if (req.user.role === "admin") {
+      const foundUser = await User.findByPk(userId, {
+        attributes: { exclude: ["createdAt", "updatedAt", "password"] },
+      });
+      res.status(200).json({ foundUser });
+    }
+    res.status(400).json({ message: "Only admin can view users" });
+  } catch (error) {
+    const err = new Error("User not found");
+    er.status = 404;
+    next(err);
+  }
+};
+
+// Users Friendship
+exports.addUser = async (req, res, next) => {
+  try {
+    const addedUser = await User.findByPk(req.params.userId);
+    const relation = await req.user.addContact(addedUser, {
+      through: { status: "Pendding" },
+    });
+    res.json("added");
   } catch (error) {
     next(error);
   }

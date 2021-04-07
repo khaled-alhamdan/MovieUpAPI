@@ -33,7 +33,14 @@ exports.jwtStrategy = new JWTStrategy(
       return done(null, false);
     }
     try {
-      const user = await User.findByPk(jwtPayload.id);
+      const user = await User.findByPk(jwtPayload.id, {
+        include: [
+          {
+            model: User,
+            as: "contact",
+          },
+        ],
+      });
       done(null, user);
     } catch (error) {
       done(error);

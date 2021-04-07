@@ -23,7 +23,6 @@ exports.createRoom = async (req, res, next) => {
         movieID: movie.id,
       });
       newRoom.addUser(req.user);
-      console.log(req.user);
       res.status(201).json(newRoom);
     }
     res.status(400).json({ message: "Viewers cannot add rooms" });
