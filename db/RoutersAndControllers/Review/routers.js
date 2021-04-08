@@ -7,6 +7,7 @@ const {
   updateReview,
   deleteReview,
   reviewList,
+  averageReview,
 } = require("./controllers");
 
 router.param("reviewID", async (req, res, next, reviewID) => {
@@ -40,5 +41,9 @@ router.delete(
   passport.authenticate("jwt", { session: false }),
   deleteReview
 );
-
+router.get(
+  "/:movieID/reviewsAvg",
+  passport.authenticate("jwt", { session: false }),
+  averageReview
+);
 module.exports = router;
