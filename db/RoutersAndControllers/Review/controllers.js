@@ -1,3 +1,4 @@
+const sequelize = require("sequelize");
 const { Review, Movie } = require("../../models");
 
 exports.fetchReview = async (reviewID, next) => {
@@ -59,5 +60,21 @@ exports.reviewList = async (req, res, next) => {
     res.json(movieReviews);
   } catch (error) {
     next(error);
+  }
+};
+
+exports.averageReview = async (req, res, next) => {
+  try {
+    const movie = await Movie.findByPk(req.params.movieID);
+
+    const where = { where: { movieID: movie.id } };
+    const total = await Review.sum(`rating`, where);
+    const count = await Review.count(where);
+
+    const average = Math.round(total / count);
+
+    res.json({ average });
+  } catch (error) {
+    next(error.message);
   }
 };
